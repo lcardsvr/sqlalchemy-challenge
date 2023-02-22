@@ -93,12 +93,28 @@ app = Flask(__name__)
 def welcome():
     """List all available api routes."""
     return (
-        f"Available Routes:<br/>"
-        f"/api/v1.0/precipitation<br/>"
-        f"/api/v1.0/stations<br/>"
-        f"/api/v1.0/tobs<br/>"
-        f"/api/v1.0/Year-MM-DD<br/>"
-        f"/api/v1.0/Year-MM-DD/Year-MM-DD<br/>"
+        f"<h1>Module 10 Challenge</h1>" 
+        f'<img src="https://static.bc-edx.com/data/dla-1-2/m10/lms/img/surfs-up.jpg" alt=""/>'
+        f"<br/>"
+        f"<h2>Available Routes:</h2><br/>"
+        f"<br/>"
+        f"<ol>"
+        f"<li>To get the Jsonified precipitation data for the last year in the database :<br/>"
+        f"<strong>  /api/v1.0/precipitation </strong></li><br/>"
+        f"<br/>"
+        f"<li>Jsonified data of all of the stations in the database :<br/>"
+        f" <strong> /api/v1.0/stations</strong></li><br/>"
+        f"<br/>"
+        f"<li>Jsonified last year of data  for the most active station (USC00519281) :<br/>"
+        f" <strong> /api/v1.0/tobs</strong></li><br/>"
+        f"<br/>"
+        f"<li> Min, max, and average temperatures calculated from the given start date to the end of the dataset. Input format must be numbers separated by a hyphen following Year-MM-DD format:<br/>"
+        f"<strong>  /api/v1.0/Year-MM-DD</strong></li><br/>"
+        f"<br/>"
+        f"<li>Min, max, and average temperatures calculated from the given start date to the given end date. Input format must be numbers separated by a hyphen following Year-MM-DD format:<br/>"
+        f"<strong> /api/v1.0/Year-MM-DD/Year-MM-DD</strong></li><br/>"
+        f"</ol>"
+        f"<strong>For the queries data is available between 2010-01-01 and 2017-08-23</strong>"
     )
 
 
