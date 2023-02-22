@@ -27,10 +27,12 @@ a snip of the maximum precipitation per day is presented below.
 A summary of the precipitation data is below:
 
 
-| precipitation | 
+precipitation 
 
-| ---- | -----|
+
 | count |	2021.000000 |
+| ---- | -----|
+
 |mean |	4.505888|
 |std|	11.713487|
 |min|	0.000000|
@@ -73,7 +75,6 @@ Count of measurements per station
 
 | Station Name | Min Temp| Max Temp| Average Temp | 
 | -------------| -------- | ------- | ---------- | 
-
  |'USC00519281'| 12.2| 29.4| 22.03582251082252|
  |'USC00519397'| 13.3| 30.6| 23.643098384728138|
  |'USC00513117'| 15.0| 29.4| 22.602141011443422|
