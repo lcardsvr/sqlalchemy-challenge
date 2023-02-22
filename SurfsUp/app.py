@@ -45,6 +45,40 @@ Measurement = Base.classes.measurement
 # Map Station class
 Station = Base.classes.station
 
+
+#################################################
+# Functions to check dates for queries
+#################################################
+
+def check_date (argument):
+
+    date_list = argument.split('-')
+
+    if len (date_list)==3:
+
+        try:
+
+            year = int(date_list[0])
+
+            month = int(date_list[1])
+
+            day = int(date_list[2])
+
+            query_date = dt.date(year, month,day)
+
+            return (query_date)
+        
+        except:
+
+
+            return (False)
+        
+    else:
+        
+        return (False)
+
+
+
 #################################################
 # Flask Setup
 #################################################
@@ -63,8 +97,8 @@ def welcome():
         f"/api/v1.0/precipitation<br/>"
         f"/api/v1.0/stations<br/>"
         f"/api/v1.0/tobs<br/>"
-        f"/api/v1.0/<start><br/>"
-        f"/api/v1.0/<start>/<end><br/>"
+        f"/api/v1.0/Year-MM-DD<br/>"
+        f"/api/v1.0/Year-MM-DD/Year-MM-DD<br/>"
     )
 
 
@@ -119,9 +153,16 @@ def stations():
     # stations_grp= session.query(Measurement).group_by(Measurement.station).order_by(func.co).all()
 
 
-    stations_grp= session.query(Measurement).\
-        group_by(Measurement.station).\
-        order_by(func.count(Measurement.station).desc()).all()
+    # stations_grp= session.query(Measurement,Station).\
+    #     group_by(Measurement.station).\
+    #     order_by(func.count(Measurement.station).desc()).\
+    #     filter(Measurement.station == Station.station ).all()
+    
+    # stations_grp= session.query(Station).\
+    # group_by(Station.station).all()
+
+    stations_grp= session.query(Station).\
+    group_by(Station.station).all()
 
     session.close()
 
@@ -134,6 +175,10 @@ def stations():
     for row in stations_grp:
         station_dict = {}
         station_dict[f"Station {i+1}"] = row.station
+        station_dict["Name"] = row.name
+        station_dict["Latitude"] = row.latitude
+        station_dict["Longitude"] = row.longitude
+        station_dict["Elevation"] = row.elevation
         stations.append(station_dict)
         i = i+1
 
@@ -168,50 +213,106 @@ def tobs():
     
 
 
-# @app.route("/api/v1.0/<start>")
-# def passengers():
-#     # Create our session (link) from Python to the DB
-#     session = Session(engine)
+@app.route("/api/v1.0/<start>")
+def start_only(start):
 
-#     """Return a list of passenger data including the name, age, and sex of each passenger"""
-#     # Query all passengers
-#     results = session.query(Passenger.name, Passenger.age, Passenger.sex).all()
+   
+    start_date = check_date (start)
 
-#     session.close()
+    if start_date != False:
+       
+       if start_date < dt.date(2010,1,1) or start_date > dt.date(2017,8,23):
+           
+           return jsonify({"error": f"{start} is outside the available data. Data is available between 2010-01-01 and 2017-08-23 "}), 404
+       
+       else:
+           
+           query_date = start_date
 
-#     # Create a dictionary from the row data and append to a list of all_passengers
-#     all_passengers = []
-#     for name, age, sex in results:
-#         passenger_dict = {}
-#         passenger_dict["name"] = name
-#         passenger_dict["age"] = age
-#         passenger_dict["sex"] = sex
-#         all_passengers.append(passenger_dict)
+    else:
 
-#     return jsonify(all_passengers)
+        return jsonify({"error": f"{start} is not a valid date. Data is available between 2010-01-01 and 2017-08-23. Please check and try again"}), 404
 
 
-# @app.route("/api/v1.0/<start>")
-# def passengers():
-#     # Create our session (link) from Python to the DB
-#     session = Session(engine)
+    # query_date = dt.date(year, month,day)    
 
-#     """Return a list of passenger data including the name, age, and sex of each passenger"""
-#     # Query all passengers
-#     results = session.query(Passenger.name, Passenger.age, Passenger.sex).all()
+    # Create our session (link) from Python to the DB
+    session = Session(engine)
 
-#     session.close()
+    query_res = session.query(func.min(Measurement.tobs),func.max(Measurement.tobs),func.avg(Measurement.tobs)).\
+    filter(Measurement.date >= query_date).all()
 
-#     # Create a dictionary from the row data and append to a list of all_passengers
-#     all_passengers = []
-#     for name, age, sex in results:
-#         passenger_dict = {}
-#         passenger_dict["name"] = name
-#         passenger_dict["age"] = age
-#         passenger_dict["sex"] = sex
-#         all_passengers.append(passenger_dict)
+    session.close()
 
-#     return jsonify(all_passengers)
+
+    temp_dict = {}
+
+    temp_dict["Minimum Temperature - degC"] = query_res[0][0]
+    temp_dict["Maximum Temperature - degC"] = query_res[0][1]
+    temp_dict["Average Temperature - degC"] = query_res[0][2]
+
+
+    return jsonify(temp_dict)
+
+
+@app.route("/api/v1.0/<start>/<end>")
+def all (start,end):
+
+
+    start_date = check_date (start)
+
+    end_date = check_date (end)
+
+
+    if start_date == False or end_date == False:
+       
+       return jsonify({"error": f"{start} is not a valid date. Data is available between 2010-01-01 and 2017-08-23. Please check and try again"}), 404
+    
+       
+    elif start_date < dt.date(2010,1,1) or start_date > dt.date(2017,8,23):
+           
+           return jsonify({"error": f"{start} is outside the available data. Data is available between 2010-01-01 and 2017-08-23 "}), 404
+    
+    elif end_date < dt.date(2010,1,1) or end_date > dt.date(2017,8,23):
+           
+           return jsonify({"error": f"{end} is outside the available data. Data is available between 2010-01-01 and 2017-08-23 "}), 404
+
+    elif end_date<start_date:
+
+        return jsonify({"error": f"{end} is greater than {start}. Data is available between 2010-01-01 and 2017-08-23. Please check and try again"}), 404
+       
+
+    try: 
+        delta = end_date - start_date
+        
+        query_date = start_date + delta
+
+    except:
+
+        return jsonify({"error": f"Unexpected error: Start date: {start} / End date: {end}. Data is available between 2010-01-01 and 2017-08-23. Please check and try again."}), 404
+
+
+ 
+    # Create our session (link) from Python to the DB
+    session = Session(engine)
+
+    query_res = session.query(func.min(Measurement.tobs),func.max(Measurement.tobs),func.avg(Measurement.tobs)).\
+    filter(Measurement.date >= start_date).\
+    filter(Measurement.date <= end_date).all()
+
+    session.close()
+
+
+    temp_dict = {}
+
+    temp_dict["Minimum Temperature - degC"] = query_res[0][0]
+    temp_dict["Maximum Temperature - degC"] = query_res[0][1]
+    temp_dict["Average Temperature - degC"] = query_res[0][2]
+
+
+    return jsonify(temp_dict)
+
+
 
 if __name__ == '__main__':
     app.run(debug=True)
