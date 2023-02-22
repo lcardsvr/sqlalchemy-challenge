@@ -93,6 +93,9 @@ app = Flask(__name__)
 def welcome():
     """List all available api routes."""
     return (
+        f"<head>"
+        f"<title>Module 10 Challenge - LCard</title>" 
+        f"</head>"
         f"<h1>Module 10 Challenge</h1>" 
         f'<img src="https://static.bc-edx.com/data/dla-1-2/m10/lms/img/surfs-up.jpg" alt=""/>'
         f"<br/>"
