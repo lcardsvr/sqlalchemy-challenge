@@ -119,41 +119,53 @@ def stations():
     # stations_grp= session.query(Measurement).group_by(Measurement.station).order_by(func.co).all()
 
 
-    stations_grp= session.query(Measurement).group_by(Measurement.station).order_by(func.count(Measurement.station).desc()).all()
+    stations_grp= session.query(Measurement).\
+        group_by(Measurement.station).\
+        order_by(func.count(Measurement.station).desc()).all()
 
     session.close()
 
     # Create a dictionary from the row data and append to a list of all_passengers
     stations = []
-    for station in stations_grp:
+    st =len(stations_grp)
+
+    i=0 
+
+    for row in stations_grp:
         station_dict = {}
-        station_dict["station"] = station
+        station_dict[f"Station {i+1}"] = row.station
         stations.append(station_dict)
+        i = i+1
 
     return jsonify(stations)
 
 
-# @app.route("/api/v1.0/tobs")
-# def passengers():
-#     # Create our session (link) from Python to the DB
-#     session = Session(engine)
+@app.route("/api/v1.0/tobs")
+def tobs():
+    # Create our session (link) from Python to the DB
+    session = Session(engine)
 
-#     """Return a list of passenger data including the name, age, and sex of each passenger"""
-#     # Query all passengers
-#     results = session.query(Passenger.name, Passenger.age, Passenger.sex).all()
+    query_date2 = dt.date(2017, 8,18 ) - dt.timedelta(days=365)
+    print("Query Date: ", query_date2)
 
-#     session.close()
+    temp_data = session.query(Measurement.date, Measurement.tobs).\
+     filter(Measurement.date >= query_date2).\
+     filter(Measurement.station == 'USC00519281' ).\
+     order_by(Measurement.date).all()
+    
+    session.close()
+    
+    temp_data_out = []
 
-#     # Create a dictionary from the row data and append to a list of all_passengers
-#     all_passengers = []
-#     for name, age, sex in results:
-#         passenger_dict = {}
-#         passenger_dict["name"] = name
-#         passenger_dict["age"] = age
-#         passenger_dict["sex"] = sex
-#         all_passengers.append(passenger_dict)
+    for date, tobs in temp_data:
+        temp_dict = {}
+        temp_dict["date"]=date
+        temp_dict["tobs"]=tobs
+        temp_data_out.append(temp_dict)
 
-#     return jsonify(all_passengers)
+    return jsonify(temp_data_out)
+
+    
 
 
 # @app.route("/api/v1.0/<start>")
