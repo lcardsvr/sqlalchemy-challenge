@@ -19,16 +19,12 @@ With this date query date range was set as "query_date = dt.date(2017, 8, 23) - 
 
 The required analysis is in the jupyter notebook under https://github.com/lcardsvr/sqlalchemy-challenge/blob/main/SurfsUp/climate_starter.ipynb.
 
-a snip of the maximum precipitation per day is presented below.
+A snip of the maximum precipitation per day is presented below.
 
 ![image](/precipitation_max_plot.png)
 
 
 A summary of the precipitation data is below:
-
-
-precipitation 
-
 
 | count |	2021.000000 |
 | ---- | -----|
@@ -40,9 +36,7 @@ precipitation
 |75%	|3.300000|
 |max	|170.200000|
 
-the summary per station for the year is below:
-
-----Summary per station for last year-----
+The summary per station for the year is below:
 
 
 | Station Name | Min Prcp| Max Prcp| Average Prcp | Count |
@@ -90,7 +84,7 @@ The minimum temperature for the station was 12.2 degC.
 The maximum temperature for the station was 29.4 degC.
 The average temperature for the station was 22.03582251082252 degC.
 
-The histogram from the last year temperature measurements for USC00519281 is below.
+The histogram for the last year temperature measurements for USC00519281 is below.
 
 ![image](/temperature_plot.png)
 
@@ -129,7 +123,7 @@ For the queries data is available between 2010-01-01 and 2017-08-23
 
 1. Submitted and available in GitHub under https://github.com/lcardsvr/sqlalchemy-challenge
 
-2. Sursup Jupyter Notebook available under https://github.com/lcardsvr/sqlalchemy-challenge/blob/main/SurfsUp/climate_starter.ipynb
+2. Surfsup Jupyter Notebook available under https://github.com/lcardsvr/sqlalchemy-challenge/blob/main/SurfsUp/climate_starter.ipynb
 
 3. Code for the App available under https://github.com/lcardsvr/sqlalchemy-challenge/blob/main/SurfsUp/app.py
 
